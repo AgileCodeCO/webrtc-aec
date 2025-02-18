@@ -1,0 +1,59 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Sender";
+}
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+
+    <script>
+        const localVideo = document.getElementById('localVideo');
+        const peerConnection = new RTCPeerConnection();
+
+        const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/webrtc-signal")
+                .build();
+
+        connection.on("ReceiveAnswer", answer => {
+            peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(answer)));
+        });
+
+        connection.on("ReceiveIceCandidate", candidate => {
+            peerConnection.addIceCandidate(new RTCIceCandidate(JSON.parse(candidate)));
+        });
+
+        peerConnection.onicecandidate = event => {
+            if (event.candidate) {
+                connection.invoke("SendIceCandidate", JSON.stringify(event.candidate));
+            }
+        };
+
+        $(document).ready(async function (){
+           
+            await connection.start();
+
+        });
+
+        function startWebRtcSession(){
+
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .then(stream => {
+                    localVideo.srcObject = stream;
+                    stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+                });
+
+            peerConnection.createOffer()
+                .then(offer => peerConnection.setLocalDescription(offer))
+                .then(() => connection.invoke("SendOffer", JSON.stringify(peerConnection.localDescription)));
+        }
+    </script>
+}
+
+<div class="text-center">
+    <h1 class="display-4">WebRTC Sender</h1>
+    <video id="localVideo" autoplay playsinline></video>
+    <div class="text-center">
+        <button class="btn btn-primary" onclick="startWebRtcSession()">Start</button>
+    </div>
+</div>
