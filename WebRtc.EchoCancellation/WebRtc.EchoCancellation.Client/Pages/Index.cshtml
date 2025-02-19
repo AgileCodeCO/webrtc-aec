@@ -14,9 +14,11 @@
 
         const remoteVideo = document.getElementById('remoteVideo');
         const peerConnection = new RTCPeerConnection();
+        var trackReceived = false;
 
         connection.on("ReceiveOffer", offer => {
             console.log("Received offer:", offer);
+            trackReceived = false;
             peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(offer)))
                 .then(() => peerConnection.createAnswer())
                 .then(answer => peerConnection.setLocalDescription(answer))
@@ -40,7 +42,11 @@
 
         peerConnection.ontrack = event => {
             console.log("Received remote track:", event.streams[0]);
-            remoteVideo.srcObject = event.streams[0];
+            if (!trackReceived)
+            {
+                remoteVideo.srcObject = event.streams[0];
+                trackReceived = true;
+            }
         };
 
         $(document).ready(async function () {
@@ -56,5 +62,5 @@
 
 <div class="text-center">
     <h1 class="display-4">WebRTC Client</h1>
-    <video id="remoteVideo" autoplay playsinline></video>
+    <video id="remoteVideo" width="620" height="480" controls playsinline crossorigin></video>
 </div>
