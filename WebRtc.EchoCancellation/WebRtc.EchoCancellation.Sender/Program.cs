@@ -7,8 +7,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
+    // Allow cors from client url 
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("https://localhost:7164")
+        builder => builder.WithOrigins("https://localhost:7164", "http://localhost:5022")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials());
@@ -24,7 +25,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -36,7 +37,5 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 app.MapHub<SessionHub>("/webrtc-signal");
-
-// Allow cors from client url 
 
 app.Run();

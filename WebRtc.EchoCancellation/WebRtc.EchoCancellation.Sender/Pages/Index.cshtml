@@ -16,36 +16,53 @@
                 .build();
 
         connection.on("ReceiveAnswer", answer => {
-            peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(answer)));
+            console.log("Received answer:", answer);
+            peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(answer)))
+                .catch(error => console.error("Error setting remote description:", error));
         });
 
         connection.on("ReceiveIceCandidate", candidate => {
-            peerConnection.addIceCandidate(new RTCIceCandidate(JSON.parse(candidate)));
+            console.log("Received ICE candidate:", candidate);
+            peerConnection.addIceCandidate(new RTCIceCandidate(JSON.parse(candidate)))
+                .catch(error => console.error("Error adding ICE candidate:", error));
         });
 
         peerConnection.onicecandidate = event => {
             if (event.candidate) {
-                connection.invoke("SendIceCandidate", JSON.stringify(event.candidate));
+                console.log("Sending ICE candidate:", event.candidate);
+                connection.invoke("SendIceCandidate", JSON.stringify(event.candidate))
+                    .catch(error => console.error("Error sending ICE candidate:", error));
             }
         };
 
         $(document).ready(async function (){
-           
-            await connection.start();
-
+            try {
+                await connection.start();
+                console.log("SignalR connection established.");
+            } catch (error) {
+                console.error("Error establishing SignalR connection:", error);
+            }
         });
 
         function startWebRtcSession(){
-
             navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                 .then(stream => {
                     localVideo.srcObject = stream;
                     stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
-                });
+                    console.log("Local stream added to peer connection.");
+                })
+                .catch(error => console.error("Error accessing media devices:", error));
 
             peerConnection.createOffer()
-                .then(offer => peerConnection.setLocalDescription(offer))
-                .then(() => connection.invoke("SendOffer", JSON.stringify(peerConnection.localDescription)));
+                .then(offer => {
+                    console.log("Created offer:", offer);
+                    return peerConnection.setLocalDescription(offer);
+                })
+                .then(() => {
+                    console.log("Local description set:", peerConnection.localDescription);
+                    return connection.invoke("SendOffer", JSON.stringify(peerConnection.localDescription));
+                })
+                .catch(error => console.error("Error creating or sending offer:", error));
         }
     </script>
 }
