@@ -4,8 +4,8 @@ using Serilog;
 using Serilog.Extensions.Logging;
 using SIPSorcery.Media;
 using SIPSorcery.Net;
-using SIPSorceryMedia.Windows;
 using System.Net;
+using WebRtc.EchoCancellation.ConsoleSender.Audio;
 using WebSocketSharp.Server;
 
 class Program
@@ -52,7 +52,7 @@ class Program
         };
         var pc = new RTCPeerConnection(config);
 
-        WindowsAudioEndPoint audioSource = new WindowsAudioEndPoint(new AudioEncoder(), audioInDeviceIndex: 0, disableSink: true);
+        MicAudioSource audioSource = new MicAudioSource(new AudioEncoder(), audioInDeviceIndex: 0);
         //audioSource.RestrictFormats(x => x.FormatName == "OPUS");
         audioSource.OnAudioSourceEncodedSample += (uint durationRtpUnits, byte[] sample) =>
         {

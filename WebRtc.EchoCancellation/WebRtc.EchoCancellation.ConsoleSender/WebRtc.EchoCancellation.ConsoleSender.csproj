@@ -16,7 +16,11 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="SIPSorcery" Version="8.0.9" />
     <PackageReference Include="SIPSorceryMedia.Encoders" Version="8.0.7" />
-    <PackageReference Include="SIPSorceryMedia.Windows" Version="8.0.7" />
+    <PackageReference Include="WebRtcVadSharp" Version="1.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WebRtc.EchoCancellation.AudioProcessing\WebRtc.EchoCancellation.AudioProcessing.csproj" />
   </ItemGroup>
 
 </Project>

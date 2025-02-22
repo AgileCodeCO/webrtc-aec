@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebRtc.EchoCancellation.Sender", "WebRtc.EchoCancellation.Sender\WebRtc.EchoCancellation.Sender.csproj", "{A8731142-300E-480D-BD32-061807C37722}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebRtc.EchoCancellation.Client", "WebRtc.EchoCancellation.Client\WebRtc.EchoCancellation.Client.csproj", "{206DD27C-0D09-47B6-A9F4-4C991FB00332}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebRtc.EchoCancellation.ConsoleSender", "WebRtc.EchoCancellation.ConsoleSender\WebRtc.EchoCancellation.ConsoleSender.csproj", "{296DAE44-604B-41B0-A1A9-4712EE950D3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebRtc.EchoCancellation.AudioProcessing", "WebRtc.EchoCancellation.AudioProcessing\WebRtc.EchoCancellation.AudioProcessing.csproj", "{CA399AEA-8A9E-4386-9E32-2746DB92DF84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A8731142-300E-480D-BD32-061807C37722}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A8731142-300E-480D-BD32-061807C37722}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A8731142-300E-480D-BD32-061807C37722}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A8731142-300E-480D-BD32-061807C37722}.Release|Any CPU.Build.0 = Release|Any CPU
 		{206DD27C-0D09-47B6-A9F4-4C991FB00332}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{206DD27C-0D09-47B6-A9F4-4C991FB00332}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{206DD27C-0D09-47B6-A9F4-4C991FB00332}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -27,6 +23,10 @@ Global
 		{296DAE44-604B-41B0-A1A9-4712EE950D3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{296DAE44-604B-41B0-A1A9-4712EE950D3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{296DAE44-604B-41B0-A1A9-4712EE950D3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA399AEA-8A9E-4386-9E32-2746DB92DF84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA399AEA-8A9E-4386-9E32-2746DB92DF84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA399AEA-8A9E-4386-9E32-2746DB92DF84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA399AEA-8A9E-4386-9E32-2746DB92DF84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
