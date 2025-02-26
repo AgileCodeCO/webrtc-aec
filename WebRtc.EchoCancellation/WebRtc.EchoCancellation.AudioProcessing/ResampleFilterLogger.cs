@@ -127,7 +127,7 @@ namespace AudioProcessingModuleCs.Media.Dsp
                     AverageSamplesLengthRetrievedTotal, // 10
                     AverageScaledLengthRecent, // 11
                     AverageSamplesLengthRetrievedRecent); // 12
-				//ClientLogger.Debug(stats);
+                Debug.WriteLine(stats);
                 ResetRecentCounters(DateTime.Now);
             }
         }
@@ -190,7 +190,7 @@ namespace AudioProcessingModuleCs.Media.Dsp
                 minCorrectionFactor,
                 range);
             ResetRecentCounters(DateTime.Now);
-			//ClientLogger.Debug(stats);
+			Debug.WriteLine(stats);
         }
 
         internal void LogReadingTooSlow(int unreadBytes)

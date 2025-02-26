@@ -109,7 +109,7 @@ namespace AudioProcessingModuleCs.Media.Dsp
 				bool moreFrames;
 				do
 				{
-					if (playedResampler.Read(frame, out moreFrames))
+					if (playedResampler.Read(frame, out moreFrames, out var played))
 					{
 						playedQueue.Enqueue(frame);
 						logger.LogFramePlayed(frame);
@@ -133,13 +133,14 @@ namespace AudioProcessingModuleCs.Media.Dsp
 			recordedResampler.Write(recordedData);
 		}
 
-		public virtual bool Read(Array outBuffer, out bool moreFrames)
+		public virtual bool Read(Array outBuffer, out bool moreFrames, out short[]? playedBuffer)
 		{
-			// FIXME: We're moving the data around twice, which is unnecessary. When I get it working,
-			// I need to come back and get rid of one of the Buffer.BlockCopy() moves.
+            // FIXME: We're moving the data around twice, which is unnecessary. When I get it working,
+            // I need to come back and get rid of one of the Buffer.BlockCopy() moves.
 
-			// Dequeue the audio submitted to the speakers ~12 frames back.
-			if (recordedResampler.Read(recorded, out moreFrames))
+            playedBuffer = null;
+            // Dequeue the audio submitted to the speakers ~12 frames back.
+            if (recordedResampler.Read(recorded, out moreFrames, out var _))
 			{
 				// If we successfully retrieved a buffered recorded frame, then try to get one of the buffered played frames.
 				short[] played;
@@ -156,9 +157,11 @@ namespace AudioProcessingModuleCs.Media.Dsp
 					played = playedQueue.Dequeue();
 				}
 
-				// If we have both a recorded and a played frame, let's echo cancel those babies.
-				PerformEchoCancellation(recorded, played, (short[])outBuffer);
-				logger.LogFrameCancelled(recorded, (short[])outBuffer);
+                // If we have both a recorded and a played frame, let's echo cancel those babies.
+                PerformEchoCancellation(recorded, played, (short[])outBuffer);
+				playedBuffer = played;
+                //Buffer.BlockCopy(played, 0, playedBuffer, 0, played.Length * sizeof(short));
+                logger.LogFrameCancelled(recorded, (short[])outBuffer);
 			}
 			else
 			{

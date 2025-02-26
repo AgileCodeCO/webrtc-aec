@@ -18,7 +18,7 @@ namespace AudioProcessingModuleCs.Media.Dsp
         /// <param name="frame">The buffer onto which the processed frame should be written.</param>
         /// <param name="moreFrames">Whether there are more processed frames available for retrieval.</param>
         /// <returns>True if a processed frame was retrieved and written onto the outBuffer, false if not.</returns>
-        bool Read(Array frame, out bool moreFrames);
+        bool Read(Array frame, out bool moreFrames, out short[]? playedBuffer);
 
         /// <summary>
         /// (Optional) Unique name for the filter instance. Helpful in debugging, so we can control which instance we're breaking into.

@@ -29,6 +29,7 @@ namespace WebRtc.EchoCancellation.ConsoleSender.Audio
         private WaveInEvent _waveInEvent;
 
         private WasapiLoopbackCapture _waveOut;
+        private WaveFileWriter _wavWriter;
 
         private IAudioEncoder _audioEncoder;
         private MediaFormatManager<AudioFormat> _audioFormatManager;
@@ -78,26 +79,28 @@ namespace WebRtc.EchoCancellation.ConsoleSender.Audio
             _audioInDeviceIndex = audioInDeviceIndex;
             _disableSource = disableSource;
 
-            _enhancer = new apm.Dsp.WebRtc.WebRtcFilter(100,
+            _enhancer = new apm.Dsp.WebRtc.WebRtcFilter(250,
                 250,
-                new apm.AudioFormat(8000),
-                new apm.AudioFormat(44100, channels : 2, bitsPerSample: 32),
+                new apm.AudioFormat(samplesPerSecond: (int)DefaultAudioSourceSamplingRate, channels: DEVICE_CHANNELS, bitsPerSample: DEVICE_BITS_PER_SAMPLE),
+                new apm.AudioFormat(),
                 true,
-                true,
-                true);
+                false,
+                false);
 
             if (!_disableSource)
             {
                 InitCaptureDevice(_audioInDeviceIndex, (int)DefaultAudioSourceSamplingRate);
-
-                //Init loopback capture
-                _waveOut = new WasapiLoopbackCapture();
-                _waveOut.DataAvailable += WaveOut_DataAvailable;
             }
         }
 
         private void WaveOut_DataAvailable(object? sender, WaveInEventArgs e)
         {
+            _wavWriter.Write(e.Buffer, 0, e.BytesRecorded);
+
+            //byte[] buffer = e.Buffer.Take(e.BytesRecorded).ToArray();
+            //short[] pcm = buffer.Where((x, i) => i % 2 == 0).Select((y, i) => BitConverter.ToInt16(buffer, i * 2)).ToArray();
+            //byte[] encodedSample = _audioEncoder.EncodeAudio(pcm, _audioFormatManager.SelectedFormat);
+
             _enhancer.RegisterFramePlayed(e.Buffer);
         }
 
@@ -166,6 +169,7 @@ namespace WebRtc.EchoCancellation.ConsoleSender.Audio
                 if (_waveOut != null)
                 {
                     _waveOut.DataAvailable -= WaveOut_DataAvailable;
+                    _wavWriter.Dispose();
                     _waveOut.StopRecording();
                 }
             }
@@ -210,6 +214,17 @@ namespace WebRtc.EchoCancellation.ConsoleSender.Audio
                     _waveInEvent.DeviceNumber = audioInDeviceIndex;
                     _waveInEvent.WaveFormat = _waveSourceFormat;
                     _waveInEvent.DataAvailable += LocalAudioSampleAvailable;
+
+                    //Init loopback capture
+                    _waveOut = new WasapiLoopbackCapture();
+                    _waveOut.WaveFormat = new WaveFormat(16000, DEVICE_BITS_PER_SAMPLE, DEVICE_CHANNELS);
+
+                    var outputFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "NAudio");
+                    Directory.CreateDirectory(outputFolder);
+                    var outputFilePath = Path.Combine(outputFolder, "recorded.wav");
+                    _wavWriter = new WaveFileWriter(outputFilePath, _waveOut.WaveFormat);
+
+                    _waveOut.DataAvailable += WaveOut_DataAvailable;
                 }
                 else
                 {
@@ -231,8 +246,9 @@ namespace WebRtc.EchoCancellation.ConsoleSender.Audio
         {
             // Note NAudio.Wave.WaveBuffer.ShortBuffer does not take into account little endian.
             // https://github.com/naudio/NAudio/blob/master/NAudio/Wave/WaveOutputs/WaveBuffer.cs
-            // WaveBuffer wavBuffer = new WaveBuffer(args.Buffer.Take(args.BytesRecorded).ToArray());
-            // byte[] encodedSample = _audioEncoder.EncodeAudio(wavBuffer.ShortBuffer, _audioFormatManager.SelectedFormat);
+            //WaveBuffer wavBuffer = new WaveBuffer(args.Buffer.Take(args.BytesRecorded).ToArray());
+            //byte[] encodedSample = _audioEncoder.EncodeAudio(wavBuffer.ShortBuffer, _audioFormatManager.SelectedFormat);
+            //OnAudioSourceEncodedSample?.Invoke((uint)encodedSample.Length, encodedSample);
 
             //bool containsSpeech = DoesFrameContainSpeech(args.Buffer);
             //logger.LogInformation($"Frame contains speach: {containsSpeech}");
@@ -249,11 +265,23 @@ namespace WebRtc.EchoCancellation.ConsoleSender.Audio
                 do
                 {
                     short[] cancelBuffer = new short[args.BytesRecorded]; // contains cancelled audio signal
-                    if (_enhancer.Read(cancelBuffer, out moreFrames))
+                    if (_enhancer.Read(cancelBuffer, out moreFrames, out var playedBuffer))
                     {
                         byte[] buffer = ShortsToBytes(cancelBuffer.Take(args.BytesRecorded).ToArray());
+                        
                         short[] pcm = cancelBuffer.Where((x, i) => i % 2 == 0).Select((y, i) => BitConverter.ToInt16(buffer, i * 2)).ToArray();
                         byte[] encodedSample = _audioEncoder.EncodeAudio(pcm, _audioFormatManager.SelectedFormat);
+
+                        if(playedBuffer != null)
+                        {
+                            byte[] buffer2 = ShortsToBytes(playedBuffer.Take(args.BytesRecorded).ToArray());
+                            //_wavWriter.Write(buffer2, 0, buffer2.Length);
+
+                            short[] pcm2 = playedBuffer.Where((x, i) => i % 2 == 0).Select((y, i) => BitConverter.ToInt16(buffer2, i * 2)).ToArray();
+                            byte[] encodedSample2 = _audioEncoder.EncodeAudio(pcm2, _audioFormatManager.SelectedFormat);
+                            //OnAudioSourceEncodedSample?.Invoke((uint)encodedSample2.Length, encodedSample2);
+                        }
+
                         OnAudioSourceEncodedSample?.Invoke((uint)encodedSample.Length, encodedSample);
                     }
                 } while (moreFrames);

@@ -14,8 +14,9 @@ namespace AudioProcessingModuleCs.Media.Dsp
             this.outputBytesPerFrame = outputBytesPerFrame;
         }
 
-        public bool Read(Array outBuffer, out bool moreFrames)
+        public bool Read(Array outBuffer, out bool moreFrames, out short[]? playedBuffer)
         {
+            playedBuffer = null;
             if (writePosition - readPosition >= outputBytesPerFrame)
             {
                 // Return the next available frame.

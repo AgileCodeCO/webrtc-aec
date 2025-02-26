@@ -50,32 +50,32 @@ namespace AudioProcessingModuleCs.Media.Dsp
 				var recentMsBetweenCancelledFrames = intervalSinceLastReset.TotalMilliseconds / framesCancelledRecent;
 				var totalMsBetweenPlayedFrames = intervalSinceStart.TotalMilliseconds / framesPlayedTotal;
 				var recentMsBetweenPlayedFrames = intervalSinceLastReset.TotalMilliseconds / framesPlayedRecent;
-				//ClientLogger.Debug("(AEC) Played: {0}/{1}; Cancelled: {2}/{3}; msBetweenPlayed:{4:0.00}/{5:0.00}; msBetweenCancelled:{6:0.00}/{7:0.00};",
-				//    framesPlayedRecent, framesPlayedTotal,
-				//    framesCancelledRecent, framesCancelledTotal,
-				//    recentMsBetweenCancelledFrames, totalMsBetweenCancelledFrames,
-				//    recentMsBetweenPlayedFrames, totalMsBetweenPlayedFrames);
+				Debug.WriteLine("(AEC) Played: {0}/{1}; Cancelled: {2}/{3}; msBetweenPlayed:{4:0.00}/{5:0.00}; msBetweenCancelled:{6:0.00}/{7:0.00};",
+					framesPlayedRecent, framesPlayedTotal,
+					framesCancelledRecent, framesCancelledTotal,
+					recentMsBetweenCancelledFrames, totalMsBetweenCancelledFrames,
+					recentMsBetweenPlayedFrames, totalMsBetweenPlayedFrames);
 
-				//ClientLogger.LogDebugMessage("(AEC) Played: {0}/{1}; Cancelled: {2}/{3}; Full: {4}/{5}; TooSmall: {6}/{7}; TargetReached: {8}/{9}",
-				//    framesPlayedRecent, framesPlayedTotal,
-				//    framesCancelledRecent, framesCancelledTotal,
-				//    queueFullRecent, queueFullTotal,
-				//    queueTooSmallRecent, queueTooSmallTotal,
-				//    queueTargetReachedRecent, queueTargetReachedTotal);
+                Debug.WriteLine("(AEC) Played: {0}/{1}; Cancelled: {2}/{3}; Full: {4}/{5}; TooSmall: {6}/{7}; TargetReached: {8}/{9}",
+					framesPlayedRecent, framesPlayedTotal,
+					framesCancelledRecent, framesCancelledTotal,
+					queueFullRecent, queueFullTotal,
+					queueTooSmallRecent, queueTooSmallTotal,
+					queueTargetReachedRecent, queueTargetReachedTotal);
 
-				//double totalInputAverage = totalStdDevInputVolumeSum / framesPlayedTotal;
-				//double recentInputAverage = recentStdDevInputVolumeSum / framesPlayedRecent;
-				//double totalCancelledAverage = totalStdDevCancelledVolumeSum / framesPlayedTotal;
-				//double recentCancelledAverage = recentStdDevCancelledVolumeSum / framesPlayedRecent;
-				//ClientLogger.LogDebugMessage("(AEC) Recent input {0:f}, cancelled {1:f}, diff {2:f}, % {3:f}; total input {4:f}, cancelled {5:f}, diff {6:f}, % {7:f}",
-				//    recentInputAverage,
-				//    recentCancelledAverage,
-				//    recentInputAverage - recentCancelledAverage,
-				//    (recentInputAverage - recentCancelledAverage) / recentInputAverage * 100,
-				//    totalInputAverage,
-				//    totalCancelledAverage,
-				//    totalInputAverage - totalCancelledAverage,
-				//    (totalInputAverage - totalCancelledAverage) / totalInputAverage * 100);
+				double totalInputAverage = totalStdDevInputVolumeSum / framesPlayedTotal;
+				double recentInputAverage = recentStdDevInputVolumeSum / framesPlayedRecent;
+				double totalCancelledAverage = totalStdDevCancelledVolumeSum / framesPlayedTotal;
+				double recentCancelledAverage = recentStdDevCancelledVolumeSum / framesPlayedRecent;
+                Debug.WriteLine("(AEC) Recent input {0:f}, cancelled {1:f}, diff {2:f}, % {3:f}; total input {4:f}, cancelled {5:f}, diff {6:f}, % {7:f}",
+					recentInputAverage,
+					recentCancelledAverage,
+					recentInputAverage - recentCancelledAverage,
+					(recentInputAverage - recentCancelledAverage) / recentInputAverage * 100,
+					totalInputAverage,
+					totalCancelledAverage,
+					totalInputAverage - totalCancelledAverage,
+					(totalInputAverage - totalCancelledAverage) / totalInputAverage * 100);
 
 				framesCancelledRecent = 0;
 				framesPlayedRecent = 0;
@@ -132,7 +132,7 @@ namespace AudioProcessingModuleCs.Media.Dsp
 		[Conditional("DEBUG")]
 		internal void LogQueueTargetReached(int targetQueueSize, int actualQueueSize)
 		{
-			// ClientLogger.LogDebugMessage("(AEC) The queue target size of {0} was reached with an actual queue size of {1}", targetQueueSize, actualQueueSize);
+			Debug.WriteLine("(AEC) The queue target size of {0} was reached with an actual queue size of {1}", targetQueueSize, actualQueueSize);
 			queueTargetReachedRecent++;
 			queueTargetReachedTotal++;
 		}

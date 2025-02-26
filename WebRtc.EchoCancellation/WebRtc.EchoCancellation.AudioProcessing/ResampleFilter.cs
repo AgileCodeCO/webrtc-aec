@@ -92,9 +92,10 @@ namespace AudioProcessingModuleCs.Media.Dsp
 		/// at a rate of 50+ objects / second, and garbage collection is the enemy of real-time audio processing. Trust me, it needs to work this way.
 		/// Oh, and the outBuffer should be recycled as well (rather than garbage collected).
 		/// </remarks>
-		public virtual bool Read(Array outBuffer, out bool moreFrames)
+		public virtual bool Read(Array outBuffer, out bool moreFrames, out short[]? playedBuffer)
 		{
-			if (UnreadBytes >= OutputBytesPerFrame)
+			playedBuffer = null;
+            if (UnreadBytes >= OutputBytesPerFrame)
 			{
 				// Return the next available frame.
 				lock (this)
